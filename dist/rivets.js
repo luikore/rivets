@@ -1066,15 +1066,10 @@
       }
     },
     routine: function(el, value) {
-      var key, model, models, _ref1;
+      var models;
       if (!!value === !this.bound) {
         if (value) {
-          models = {};
-          _ref1 = this.view.models;
-          for (key in _ref1) {
-            model = _ref1[key];
-            models[key] = model;
-          }
+          models = Object.create(this.view.models);
           (this.nested || (this.nested = new Rivets.View(el, models, this.view.options()))).bind();
           this.marker.parentNode.insertBefore(el, this.marker.nextSibling);
           return this.bound = true;
@@ -1155,7 +1150,7 @@
       }
     },
     routine: function(el, collection) {
-      var binding, data, i, index, key, model, modelName, options, previous, template, view, _i, _j, _k, _len, _len1, _len2, _ref1, _ref2, _ref3;
+      var binding, data, i, index, model, modelName, options, previous, template, view, _i, _j, _k, _len, _len1, _len2, _ref1, _ref2;
       modelName = this.args[0];
       collection = collection || [];
       if (this.iterated.length > collection.length) {
@@ -1169,19 +1164,15 @@
       }
       for (index = _j = 0, _len1 = collection.length; _j < _len1; index = ++_j) {
         model = collection[index];
-        data = {
-          index: index
-        };
+        if (this.iterated[index] == null) {
+          data = Object.create(this.view.models);
+        } else {
+          data = {};
+        }
+        data.index = index;
         data[Rivets["public"].iterationAlias(modelName)] = index;
         data[modelName] = model;
         if (this.iterated[index] == null) {
-          _ref2 = this.view.models;
-          for (key in _ref2) {
-            model = _ref2[key];
-            if (data[key] == null) {
-              data[key] = model;
-            }
-          }
           previous = this.iterated.length ? this.iterated[this.iterated.length - 1].els[0] : this.marker;
           options = this.view.options();
           options.preloadData = true;
@@ -1195,9 +1186,9 @@
         }
       }
       if (el.nodeName === 'OPTION') {
-        _ref3 = this.view.bindings;
-        for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
-          binding = _ref3[_k];
+        _ref2 = this.view.bindings;
+        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+          binding = _ref2[_k];
           if (binding.el === this.marker.parentNode && binding.type === 'value') {
             binding.sync();
           }
